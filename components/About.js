@@ -62,7 +62,7 @@ export default function About() {
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Degree</span>
-                <span className={styles.infoValue}>B.Tech CSE</span>
+                <span className={styles.infoValue}>B.Tech CS</span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Email</span>
