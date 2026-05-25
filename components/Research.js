@@ -59,7 +59,7 @@ export default function Research() {
 
           <div className={styles.links}>
             <a
-              href="https://ieeexplore.ieee.org/"
+              href="https://ieeexplore.ieee.org/document/11506696"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.link}
