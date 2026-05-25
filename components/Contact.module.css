@@ -1,0 +1,213 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 48px;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.infoTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.infoDesc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.contactItems {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contactIcon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(155, 27, 48, 0.06);
+  border: 1px solid rgba(155, 27, 48, 0.15);
+  border-radius: 12px;
+  color: var(--accent-rose);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+}
+
+.contactItem:hover .contactIcon {
+  background: rgba(155, 27, 48, 0.12);
+  border-color: rgba(155, 27, 48, 0.3);
+}
+
+.contactLabel {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.contactValue {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+a.contactValue:hover {
+  color: var(--accent-rose);
+}
+
+.socialLinks {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.socialLink {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.socialLink:hover {
+  color: var(--accent-rose);
+  border-color: rgba(155, 27, 48, 0.3);
+  background: rgba(155, 27, 48, 0.08);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow-maroon);
+}
+
+/* Form */
+.form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 38px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color var(--transition-fast);
+}
+
+.inputGroup.focused .label {
+  color: var(--accent-rose);
+}
+
+.input,
+.textarea {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: all var(--transition-fast);
+  outline: none;
+  width: 100%;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--accent-maroon);
+  box-shadow: 0 0 0 3px rgba(155, 27, 48, 0.1);
+  background: rgba(155, 27, 48, 0.03);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 34px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 0 30px rgba(155, 27, 48, 0.2);
+  font-family: 'Inter', sans-serif;
+}
+
+.submitBtn:hover {
+  box-shadow: 0 0 40px rgba(155, 27, 48, 0.4);
+}
+
+.btnArrow {
+  transition: transform var(--transition-fast);
+}
+
+.submitBtn:hover .btnArrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .form {
+    padding: 24px;
+  }
+}
