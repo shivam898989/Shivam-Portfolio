@@ -2,26 +2,29 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import emailjs from '@emailjs/browser';
 import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiSend, FiArrowRight, FiCheck, FiAlertCircle } from 'react-icons/fi';
 import SectionHeader from './SectionHeader';
 import styles from './Contact.module.css';
 
 const contactInfo = [
-  { icon: <FiMail />, label: 'Email', value: 'sharmashivam4939@gmail.com', href: 'https://mail.google.com/mail/?view=cm&fs=1&to=sharmashivam4939@gmail.com' },
-  { icon: <FiPhone />, label: 'Phone', value: '+91-66306605968', href: 'tel:+9166306605968' },
+  { icon: <FiMail />, label: 'Email', value: 'sharmashivam4939@gmail.com', href: 'mailto:sharmashivam4939@gmail.com' },
+  { icon: <FiPhone />, label: 'Phone', value: '+91-6306605968', href: 'tel:+916306605968' },
   { icon: <FiMapPin />, label: 'Location', value: 'Kanpur, India', href: null },
 ];
 
 const socials = [
   { icon: <FiGithub />, label: 'GitHub', href: 'https://github.com/shivam898989' },
   { icon: <FiLinkedin />, label: 'LinkedIn', href: 'https://www.linkedin.com/in/shivam-sharma-a5149434b' },
-  { icon: <FiMail />, label: 'Email', href: 'https://mail.google.com/mail/?view=cm&fs=1&to=sharmashivam4939@gmail.com' },
+  { icon: <FiMail />, label: 'Email', href: 'mailto:sharmashivam4939@gmail.com' },
 ];
+
+// ✅ Web3Forms — free, no backend needed, delivers to your Gmail
+// Get your access key at: https://web3forms.com (enter your Gmail, check inbox, copy key)
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || '';
 
 export default function Contact() {
   const formRef = useRef(null);
-  const [formData, setFormData] = useState({ user_name: '', user_email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [focused, setFocused] = useState('');
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
   const [statusMessage, setStatusMessage] = useState('');
@@ -35,30 +38,35 @@ export default function Contact() {
     setStatus('sending');
 
     try {
-      await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-        formRef.current,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-      );
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          from_name: 'Portfolio Contact Form',
+          subject: `New message from ${formData.name} — Portfolio`,
+        }),
+      });
 
-      setStatus('success');
-      setStatusMessage('Message sent successfully! I\'ll get back to you soon.');
-      setFormData({ user_name: '', user_email: '', message: '' });
+      const result = await response.json();
 
-      setTimeout(() => {
-        setStatus('idle');
-        setStatusMessage('');
-      }, 5000);
+      if (result.success) {
+        setStatus('success');
+        setStatusMessage('Message sent successfully! I\'ll get back to you soon. ✅');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        throw new Error(result.message || 'Something went wrong');
+      }
+
+      setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 5000);
     } catch (error) {
-      console.error('EmailJS Error:', error);
+      console.error('Form error:', error);
       setStatus('error');
       setStatusMessage('Failed to send message. Please try again or email me directly.');
-
-      setTimeout(() => {
-        setStatus('idle');
-        setStatusMessage('');
-      }, 5000);
+      setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 5000);
     }
   };
 
@@ -92,7 +100,7 @@ export default function Contact() {
                   <div>
                     <span className={styles.contactLabel}>{item.label}</span>
                     {item.href ? (
-                      <a href={item.href} target="_blank" rel="noopener noreferrer" className={styles.contactValue}>{item.value}</a>
+                      <a href={item.href} className={styles.contactValue}>{item.value}</a>
                     ) : (
                       <span className={styles.contactValue}>{item.value}</span>
                     )}
@@ -131,8 +139,8 @@ export default function Contact() {
               <input
                 id="contact-name"
                 type="text"
-                name="user_name"
-                value={formData.user_name}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 onFocus={() => setFocused('name')}
                 onBlur={() => setFocused('')}
@@ -147,8 +155,8 @@ export default function Contact() {
               <input
                 id="contact-email"
                 type="email"
-                name="user_email"
-                value={formData.user_email}
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 onFocus={() => setFocused('email')}
                 onBlur={() => setFocused('')}
