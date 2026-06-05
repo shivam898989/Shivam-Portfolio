@@ -55,7 +55,7 @@ export default function Contact() {
 
       if (result.success) {
         setStatus('success');
-        setStatusMessage('Message sent successfully! I\'ll get back to you soon. ✅');
+        setStatusMessage('Message sent successfully! I\'ll get back to you soon...');
         setFormData({ name: '', email: '', message: '' });
       } else {
         throw new Error(result.message || 'Something went wrong');
