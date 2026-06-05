@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiSend, FiArrowRight } from 'react-icons/fi';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
+import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiSend, FiArrowRight, FiCheck, FiAlertCircle } from 'react-icons/fi';
 import SectionHeader from './SectionHeader';
 import styles from './Contact.module.css';
 
@@ -19,19 +20,46 @@ const socials = [
 ];
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const formRef = useRef(null);
+  const [formData, setFormData] = useState({ user_name: '', user_email: '', message: '' });
   const [focused, setFocused] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name}`);
-    const body = encodeURIComponent(`${formData.message}\n\nFrom: ${formData.name}\nEmail: ${formData.email}`);
-    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=sharmashivam4939@gmail.com&su=${subject}&body=${body}`;
-    window.open(gmailLink, '_blank');
+    setStatus('sending');
+
+    try {
+      await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      );
+
+      setStatus('success');
+      setStatusMessage('Message sent successfully! I\'ll get back to you soon.');
+      setFormData({ user_name: '', user_email: '', message: '' });
+
+      setTimeout(() => {
+        setStatus('idle');
+        setStatusMessage('');
+      }, 5000);
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setStatus('error');
+      setStatusMessage('Failed to send message. Please try again or email me directly.');
+
+      setTimeout(() => {
+        setStatus('idle');
+        setStatusMessage('');
+      }, 5000);
+    }
   };
 
   return (
@@ -64,7 +92,7 @@ export default function Contact() {
                   <div>
                     <span className={styles.contactLabel}>{item.label}</span>
                     {item.href ? (
-                      <a href={item.href} className={styles.contactValue}>{item.value}</a>
+                      <a href={item.href} target="_blank" rel="noopener noreferrer" className={styles.contactValue}>{item.value}</a>
                     ) : (
                       <span className={styles.contactValue}>{item.value}</span>
                     )}
@@ -90,6 +118,7 @@ export default function Contact() {
           </motion.div>
 
           <motion.form
+            ref={formRef}
             className={styles.form}
             onSubmit={handleSubmit}
             initial={{ opacity: 0, x: 30 }}
@@ -102,8 +131,8 @@ export default function Contact() {
               <input
                 id="contact-name"
                 type="text"
-                name="name"
-                value={formData.name}
+                name="user_name"
+                value={formData.user_name}
                 onChange={handleChange}
                 onFocus={() => setFocused('name')}
                 onBlur={() => setFocused('')}
@@ -118,8 +147,8 @@ export default function Contact() {
               <input
                 id="contact-email"
                 type="email"
-                name="email"
-                value={formData.email}
+                name="user_email"
+                value={formData.user_email}
                 onChange={handleChange}
                 onFocus={() => setFocused('email')}
                 onBlur={() => setFocused('')}
@@ -147,13 +176,38 @@ export default function Contact() {
 
             <motion.button
               type="submit"
-              className={styles.submitBtn}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className={`${styles.submitBtn} ${status === 'sending' ? styles.sending : ''}`}
+              whileHover={status === 'idle' ? { scale: 1.02 } : {}}
+              whileTap={status === 'idle' ? { scale: 0.98 } : {}}
+              disabled={status === 'sending'}
             >
-              <FiSend /> Send Message
-              <FiArrowRight className={styles.btnArrow} />
+              {status === 'sending' ? (
+                <>
+                  <span className={styles.spinner} />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <FiSend /> Send Message
+                  <FiArrowRight className={styles.btnArrow} />
+                </>
+              )}
             </motion.button>
+
+            <AnimatePresence>
+              {statusMessage && (
+                <motion.div
+                  className={`${styles.toast} ${status === 'success' ? styles.toastSuccess : styles.toastError}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {status === 'success' ? <FiCheck /> : <FiAlertCircle />}
+                  {statusMessage}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.form>
         </div>
       </div>
